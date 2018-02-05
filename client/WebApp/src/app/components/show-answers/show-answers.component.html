@@ -1,0 +1,15 @@
+<button (click)='toHome()' class="btn btn-success">Home</button>
+<button class="btn btn-danger" (click)='logout()'>Logout</button>
+<button class="btn btn-danger" (click)='atAnswer()'>Answer this Question</button>
+<h1 class="display-3">{{question.content}}</h1>
+<h1 class="display-5">{{question.details}}</h1>
+<table class="table">
+  <tr *ngFor='let answer of question.answers'>
+    <td>{{answer.content}}{{answer.details}}</td>
+    <td>{{answer.likes}}</td>
+    <td>{{answer.poster.name}}</td>
+    <td>
+    <button class="btn btn-danger" (click)='addLike(answer._id)'>Add a like</button>
+  </td>
+  </tr>
+</table>

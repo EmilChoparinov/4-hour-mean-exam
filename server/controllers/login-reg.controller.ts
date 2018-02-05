@@ -45,7 +45,9 @@ export const LoginRegController = {
      */
     checkSessionFor: (req: express.Request, res: express.Response, value: string) => {
         if (req.session[value]) {
-            res.json(new ServerMessage(true, { message: `${value} exists in session` }));
+            models.User.findById(req.session[value], (err, data) => {
+                res.json(new ServerMessage(true, data));
+            })
         } else {
             res.json(new ServerMessage(false, { message: `${value} does not exist in session` }));
         }
@@ -56,11 +58,12 @@ export const LoginRegController = {
      */
     registerUser: (req: express.Request, res: express.Response) => {
         const user = new models.User(req.body);
-        LoginRegController.hasType('email', req.body.email, (success) => {
+        LoginRegController.hasType('name', req.body.name, (success) => {
 
             // if the hasType method does not return success, this means that the database does
             // not contain a user with the given info. If so, have the entered user data
             // validated and saved to the database
+            console.log(success);
             if (!success) {
                 user.save((err, product) => {
                     if (err) {
@@ -71,7 +74,18 @@ export const LoginRegController = {
                     }
                 });
             } else {
-                res.json(new ServerMessage(false, {message: 'email already exists'}));
+                models.User.findOne({ name: req.body.name }, (err, data) => {
+
+                    // if the user was found, check the passwords and return a
+                    // server message. True will save in session, false with only send 
+                    // a ServerMessage instance
+                    if (data) {
+                        req.session._id = data._id;
+                        res.json(new ServerMessage(true, data));
+                    } else {
+                        res.json(new ServerMessage(false, { message: 'the information provided is invalid' }));
+                    }
+                });
             }
         });
     },
@@ -80,22 +94,16 @@ export const LoginRegController = {
      * logs in or rejects a given login attempt
      */
     loginUser: (req: express.Request, res: express.Response) => {
-        models.User.findOne({ email: req.body.email }, (err, data) => {
+        models.User.findOne({ name: req.body.name }, (err, data) => {
 
             // if the user was found, check the passwords and return a
             // server message. True will save in session, false with only send 
             // a ServerMessage instance
             if (data) {
-                const passwordCompare = data.password;
-                data.password = '';
-                if (passwordCompare === req.body.password) {
-                    req.session._id = data._id;
-                    res.json(new ServerMessage(true, data));
-                } else {
-                    res.json(new ServerMessage(false, {message: 'the information provided is invalid'}));
-                }
+                req.session._id = data._id;
+                res.json(new ServerMessage(true, data));
             } else {
-                res.json(new ServerMessage(false, {message: 'the information provided is invalid'}));
+                res.json(new ServerMessage(false, { message: 'the information provided is invalid' }));
             }
         });
     },

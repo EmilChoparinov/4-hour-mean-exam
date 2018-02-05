@@ -5,8 +5,10 @@ import { Routes, RouterModule } from '@angular/router';
 // COMPONENTS
 import { LogRegComponent } from './components/log-reg/log-reg.component';
 import { LoginComponent } from './components/log-reg/login/login.component';
-import { RegistrationComponent } from './components/log-reg/registration/registration.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { QuestionComponent } from './components/question/question.component';
+import { AnswerComponent } from './components/answer/answer.component';
+import { ShowAnswersComponent } from './components/show-answers/show-answers.component';
 
 const routes: Routes = [
   {
@@ -18,6 +20,21 @@ const routes: Routes = [
     path: 'dashboard',
     pathMatch: 'full',
     component: DashboardComponent
+  },
+  {
+    path: 'new-question',
+    pathMatch: 'full',
+    component: QuestionComponent
+  },
+  {
+    path: 'new-answer/:question_id',
+    pathMatch: 'full',
+    component: AnswerComponent
+  },
+  {
+    path: 'question/:question_id',
+    pathMatch: 'full',
+    component: ShowAnswersComponent
   }
 ];
 

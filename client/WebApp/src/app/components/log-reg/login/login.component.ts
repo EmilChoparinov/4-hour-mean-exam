@@ -27,11 +27,13 @@ export class LoginComponent implements OnInit {
   }
 
   login() {
-    this._userService.loginUser(this.user, (res) => {
+    this._userService.registerUser(this.user, (res) => {
 
       // if the login was successful continue to the dashboard
       // else display the response the backend gave
+      console.log(res);
       if (res.success) {
+        this._userService.user.next(res.output);
         this._router.navigate(['dashboard']);
       } else {
         this.serverMessage = res.output.message;
